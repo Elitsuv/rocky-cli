@@ -16,6 +16,7 @@ rocky/
 └── rky/              
     ├── __init__.py
     ├── commands.py     ← All commands and the router
+    ├── brain.py        ← NN layer of rocky
     └── personality.py  ← Response formatting + Rocky's voice
 ```
 ---
