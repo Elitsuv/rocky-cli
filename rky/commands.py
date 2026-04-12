@@ -1,8 +1,3 @@
-"""
-rky/commands.py
-Advanced Toolset with custom arguments and system routers.
-"""
-
 import datetime
 import webbrowser
 import time
@@ -21,62 +16,58 @@ def cmd_know_me():
     return format_response(f"Memory updated. You are {name}. We will conquer {focus} together. Amaze!")
 
 def cmd_status():
-    return format_response("Ship status: OPTIMAL.\nAstrophage containment: STABLE.\nAll systems: We are go for science.")
+    bars = brain.status_summary()
+    msg = f"Ship status: OPTIMAL.\nAstrophage containment: STABLE.\nAll systems: We are go for science.\n\n{bars}"
+    return format_response(msg, add_flair=False)
 
 def cmd_time():
     now = datetime.datetime.now().strftime("%H:%M:%S")
     return format_response(f"Local human time: {now}.\nRocky uses stellar cycles. Conversion: approximate.")
 
-# ── ADVANCED TODOS ──────────────────────────────
 def cmd_todo(args: str):
     args = args.strip()
     
     if not args or args == "list":
-        if not brain.todos:
+        quests = brain.get_active_quests()
+        if not quests:
             return format_response("Zero tasks pending. Highly illogical. Add some.")
-        tasks = "\n".join(f"  [{i+1}] {t}" for i, t in enumerate(brain.todos))
-        return format_response(f"Pending Missions:\n{tasks}\n\n  {C['DIM']}Use 'todo rm [number]' to complete.{C['RESET']}")
+        tasks = "\n".join(f"  [{q['id']}] {q['name']}" for q in quests)
+        return format_response(f"Pending Missions:\n{tasks}\n\n  {C['DIM']}Use 'todo rm [id]' to complete.{C['RESET']}")
         
     if args.startswith("add "):
-        task = args[4:].strip()
-        brain.todos.append(task)
-        brain.save_memory()
-        brain.state[1] = min(10.0, brain.state[1] + 2.0)
-        return format_response(f"Task logged to memory. Get to work on: {task}")
+        name = args[4:].strip()
+        qid = str(int(time.time()))[-4:] 
+        brain.add_quest(qid, {"name": name, "complete": False})
+        return format_response(f"Task logged to memory. Get to work on: [{qid}] {name}")
         
-    if args.startswith("rm ") or args.startswith("remove "):
+    if args.startswith("rm ") or args.startswith("remove ") or args.startswith("done "):
         try:
-            idx = int(args.split()[1]) - 1
-            if 0 <= idx < len(brain.todos):
-                removed = brain.todos.pop(idx)
-                brain.save_memory()
-                return format_response(f"Task complete: '{removed}'. Good human efficiency! Fist my bump!")
+            qid = args.split()[1]
+            if brain.complete_quest(qid):
+                return format_response(f"Task [{qid}] complete. Good human efficiency! Fist my bump!")
             else:
-                return format_response("Invalid task number. Check 'todo list'.")
-        except:
-            return format_response("Need a number to remove. (e.g., 'todo rm 1')")
+                return format_response(f"Task ID [{qid}] not found. Check 'todo list'.")
+        except IndexError:
+            return format_response("Need an ID to remove. (e.g., 'todo rm 1234')")
             
-    return format_response("Unknown todo command. Use 'todo list', 'todo add [task]', or 'todo rm [number]'.")
+    return format_response("Unknown todo command. Use 'todo list', 'todo add [task]', or 'todo rm [id]'.")
 
-# ── ADVANCED WATER ──────────────────────────────
 def cmd_water(args: str):
     args = args.strip()
     if args == "status":
-        dryness = int(brain.state[2])
-        return format_response(f"Current Dehydration Vector: {dryness}/10.\n(10 is critical failure. Drink before 10).")
+        hydration = brain.get_state()["hydration"]
+        pct = int(hydration * 100)
+        return format_response(f"Current Hydration Vector: {pct}%.\n(Warning triggers below 35%. Drink water).")
     
-    brain.state[2] = 0.0 
-    return format_response("Hydration logged. Internal fluids restored to 100%. Good human.")
+    brain.log_drink()
+    return format_response("Hydration logged. Internal fluids restored. Good human.")
 
-# ── CUSTOM POMODORO ──────────────────────────────
 def cmd_pomodoro(args: str):
     try:
-        # Check if user provided a custom time, else default to 25
         minutes = int(args.strip()) if args.strip().isdigit() else 25
         total_seconds = minutes * 60
-        
-        brain.state[1] = 10.0 
-        brain.state[0] = 0.0 
+
+        brain.start_focus_timer(minutes)
         print(format_response(f"Initiating Astrophage Drive Focus. {minutes} Earth minutes. No distractions."))
         
         sys.stdout.write("\033[?25l")
@@ -95,29 +86,40 @@ def cmd_pomodoro(args: str):
             
         sys.stdout.write("\r\033[2K") 
         sys.stdout.write("\033[?25h") 
+        
+        brain.end_focus_timer()
         return format_response(f"Time is up! {minutes} minutes of science complete. Rest now. Amaze!")
         
     except KeyboardInterrupt:
         sys.stdout.write("\r\033[2K\033[?25h")
-        brain.state[0] += 5.0 
-        brain.state[1] -= 5.0
+        # Tell the brain we aborted
+        brain.end_focus_timer()
         return format_response("Focus aborted. Do not let Stratt find out. Distraction levels rising.")
 
-# ── WEB & LORE ──────────────────────────────
-def cmd_open_youtube(): webbrowser.open("https://youtube.com"); return format_response("YouTube launched.")
-def cmd_open_google(): webbrowser.open("https://google.com"); return format_response("Google launched.")
-def cmd_astrophage(): return format_response("Astrophage — microbe from Venus.\nDanger: EXTINCTION-CLASS.")
-def cmd_taumoeba(): return format_response("Taumoeba — natural predator of Astrophage.\nStatus: SOLUTION.")
+def cmd_open_youtube(): 
+    webbrowser.open("https://youtube.com")
+    return format_response("YouTube launched. Warning: Distraction vector increasing.")
+
+def cmd_open_google(): 
+    webbrowser.open("https://google.com")
+    return format_response("Google launched.")
+
+def cmd_astrophage(): 
+    return format_response("Astrophage — microbe from Venus.\nDanger: EXTINCTION-CLASS.")
+
+def cmd_taumoeba(): 
+    return format_response("Taumoeba — natural predator of Astrophage.\nStatus: SOLUTION.")
+
 def cmd_help():
     help_text = """
     ── SYSTEM ────────────────────────────────────
-      status          Ship overview
+      status          Ship overview & Neural Vectors
       know me         Reset your user profile
       time            Current Earth metrics
 
     ── NEURAL DRIVE (BRAIN) ──────────────────────
       todo add [x]    Add a mission objective
-      todo rm [num]   Remove completed objective
+      todo rm [id]    Remove completed objective
       todo list       View pending missions
       water           Log hydration
       water status    Check dehydration vector
@@ -130,12 +132,11 @@ def cmd_help():
     """
     return format_response(help_text, add_flair=False)
 
-# ── DYNAMIC ROUTER ──────────────────────────────
 def execute(user_input: str) -> str:
     brain.process_input(user_input)
-    clean = user_input.strip().lower()
     
-    # Route dynamic commands (they take arguments)
+    clean = user_input.strip().lower()
+
     if clean.startswith("todo"):
         return cmd_todo(clean[4:])
     if clean.startswith("focus") or clean.startswith("pomodoro"):
@@ -143,7 +144,6 @@ def execute(user_input: str) -> str:
     if clean.startswith("water"):
         return cmd_water(clean[5:])
         
-    # Route static commands
     COMMAND_MAP = {
         "status": cmd_status,
         "know me": cmd_know_me,
