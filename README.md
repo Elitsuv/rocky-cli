@@ -10,7 +10,8 @@ Rocky is a terminal companion inspired by the Eridian character from **Project H
 
 ```
 rocky/
-├── rocky.py          
+├── rocky.py
+├── test.py           
 ├── README.md
 ├── .gitignore
 └── rky/              
@@ -22,16 +23,9 @@ rocky/
 ---
 
 ## Running Rocky
-**Interactive mode** (recommended):
+**Interactive mode**
 ```bash
 python rocky.py
-```
-
-**Single command via CLI:**
-```bash
-python rocky.py status
-python rocky.py "encourage me"
-python rocky.py "tau ceti"
 ```
 
 ---
