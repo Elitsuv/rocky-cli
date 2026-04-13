@@ -49,7 +49,6 @@ def print_welcome_banner():
     print(f"╚═╝  ╚═╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝   ╚═╝   {C['RESET']}")
     print(f"  {C['DIM']}Project Hail Mary — Astrophage Drive Online{C['RESET']}\n")
     
-    # NEW: Quick Start Guide for onboarding
     print(f"  {C['CYAN']}── QUICK START GUIDE ─────────────────────────────{C['RESET']}")
     print(f"  {C['ROCKY']}todo add [task]{C['RESET']}   Log a new mission")
     print(f"  {C['ROCKY']}focus [mins]{C['RESET']}      Start deep work timer (e.g., 'focus 50')")
@@ -65,7 +64,6 @@ def interactive_mode():
     if not profile:
         print(execute("know me"))
 
-    # THIS MAKES HIM TALK BACK AUTONOMOUSLY
     brain.start_heartbeat()
 
     while True:
@@ -96,7 +94,7 @@ def interactive_mode():
             print(format_response("Interrupt detected. Sleep time now. Goodbye."))
             sys.exit(0)
 
-if __name__ == "__main__":
+def main():
     arguments = sys.argv[1:]
     if arguments:
         user_command = " ".join(arguments).strip().lower()
@@ -105,3 +103,6 @@ if __name__ == "__main__":
             print(response)
     else:
         interactive_mode()
+
+if __name__ == "__main__":
+    main()
