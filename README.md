@@ -2,63 +2,85 @@
 
 > *"Question? I answer. We do science."*
 
-Rocky is a terminal companion inspired by the Eridian character from **Project Hail Mary** by Andy Weir. It runs as an interactive shell with commands themed around the novel — astrophage science, the Hail Mary mission, Eridian lore, and Rocky's iconic personality.
+Rocky is a terminal companion inspired by the Eridian scientist from **Project Hail Mary** by Andy Weir.  
+It lives in your terminal, talks back in Rocky's voice, and helps you stay productive — todo lists, focus timers, streaks, notes, quick tools, and more.
 
 ---
 
-## 📁 Project Structure
+## First time?
 
-```
-rocky/
-├── rocky.py          
-├── README.md
-├── .gitignore
-└── rky/              
-    ├── __init__.py
-    ├── commands.py     ← All commands and the router
-    ├── brain.py        ← NN layer of rocky
-    └── personality.py  ← Response formatting + Rocky's voice
-```
+When Rocky starts, he'll ask your name and your focus area (coding, physics, exams — whatever you're working on). This personalizes his responses. You can reset this anytime with `know me`.
+
 ---
 
-## Running Rocky
-**Interactive mode** (recommended):
+## Single command mode
+
+You can also call Rocky without entering interactive mode:
+
 ```bash
-python rocky.py
-```
-
-**Single command via CLI:**
-```bash
-python rocky.py status
-python rocky.py "encourage me"
-python rocky.py "tau ceti"
+rocky status
+rocky "focus 50"
+rocky "todo add finish the report"
+rocky motivate
 ```
 
 ---
 
-## 🛰️ Available Commands
+## Project Structure
 
-| Category | Commands |
-|---|---|
-| **System** | `status`, `diagnostics`, `memory` |
-| **Astrophage Science** | `astrophage`, `astrophage fuel`, `tau ceti`, `adrian`, `petrovascope`, `scan radiation`, `analyze atmosphere`, `xenonite` |
-| **Lore** | `eridian`, `rocky lore`, `grace`, `hail mary`, `stratt` |
-| **Interaction** | `hello`, `encourage me`, `help` |
-| **Utility** | `time`, `date`, `open youtube`, `focus mode`, `clear`, `exit` |
+```
+rocky-cli/
+├── setup.py           ← pip install config
+├── rocky.py           ← entry point
+└── rky/
+    ├── commands.py    ← all commands live here
+    ├── brain.py       ← memory and state
+    └── personality.py ← Rocky's voice and formatting
+```
 
 ---
 
-## 🔧 Requirements
+## Adding a new command (takes 2 minutes)
+
+1. Write a function in `rky/commands.py`:
+
+```python
+def cmd_mycommand():
+    return format_response("Rocky says something here.")
+```
+
+2. Add it to `COMMAND_MAP` inside `execute()`:
+
+```python
+"mycommand": cmd_mycommand,
+```
+
+Done. Rocky will now respond to `mycommand`.
+
+---
+
+## Requirements
 
 - Python 3.10+
-- No external libraries — standard library only
+- Numpy
 
 ---
 
-## 🪐 Adding New Commands
+## Local dev setup
 
-1. Add a function `cmd_yourcommand()` in `rky/commands.py`
-2. Register it in `COMMAND_MAP` with your trigger phrase as the key
-3. That's it — the router handles the rest
- 
-Rocky is an Eridian scientist. Logic is good. Panic is not.
+```bash
+git clone https://github.com/Elitsuv/rocky-cli.git
+cd rocky-cli
+pip install -e .
+rocky
+```
+
+---
+
+## License
+
+Apache 2.0 — see [LICENSE](LICENSE)
+
+---
+
+*Rocky is an Eridian scientist. Logic is good. Panic is not.*

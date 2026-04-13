@@ -31,3 +31,5 @@ Thumbs.db
 # Rocky-specific
 user_profile.json
 memory.json
+rocky_cli.egg-info/
+__pycache__/
