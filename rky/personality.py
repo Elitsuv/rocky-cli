@@ -1,13 +1,13 @@
 import random
 import json
-import os
+from pathlib import Path
 
 C = {
-    "ROCKY":   "\033[38;5;130m",      
-    "QUEST":   "\033[38;5;208m",      
-    "ANSWER":  "\033[38;5;203m",     
-    "DIM":     "\033[2m",             
-    "RESET":   "\033[0m",             
+    "ROCKY":   "\033[38;5;130m",
+    "QUEST":   "\033[38;5;208m",
+    "ANSWER":  "\033[38;5;203m",
+    "DIM":     "\033[2m",
+    "RESET":   "\033[0m",
 }
 
 FLAIR_LINES = [
@@ -31,29 +31,30 @@ UNKNOWN_RESPONSES = [
     "Question is unclear. Rephrase, friend?",
 ]
 
-USER_PROFILE_FILE = os.path.join(os.path.dirname(__file__), "..", "user_profile.json")
+# ── Unified State Directory ───────────────────────────────────────────────────
+_STATE_DIR  = Path.home() / ".rocky"
+USER_PROFILE_FILE = _STATE_DIR / "user_profile.json"
 
 def load_user_profile():
-    if os.path.exists(USER_PROFILE_FILE):
+    if USER_PROFILE_FILE.exists():
         try:
-            with open(USER_PROFILE_FILE, "r") as f:
-                return json.load(f)
-        except:
+            return json.loads(USER_PROFILE_FILE.read_text(encoding="utf-8"))
+        except Exception:
             return {}
     return {}
 
 def save_user_profile(profile):
     try:
-        os.makedirs(os.path.dirname(USER_PROFILE_FILE), exist_ok=True)
-        with open(USER_PROFILE_FILE, "w") as f:
-            json.dump(profile, f, indent=4)
+        _STATE_DIR.mkdir(parents=True, exist_ok=True)
+        USER_PROFILE_FILE.write_text(json.dumps(profile, indent=4), encoding="utf-8")
         return True
-    except:
+    except Exception:
         return False
 
 def get_user_name():
     profile = load_user_profile()
-    return profile.get("name", "Human")
+    # It defaults to your name, but lets others set theirs!
+    return profile.get("name", "Suvro")
 
 def format_response(message: str, add_flair: bool = True) -> str:
     """Wraps a message in Rocky's visual style with user's name."""
