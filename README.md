@@ -30,18 +30,6 @@ python rocky.py
 
 ---
 
-## 🛰️ Available Commands
-
-| Category | Commands |
-|---|---|
-| **System** | `status`, `diagnostics`, `memory` |
-| **Astrophage Science** | `astrophage`, `astrophage fuel`, `tau ceti`, `adrian`, `petrovascope`, `scan radiation`, `analyze atmosphere`, `xenonite` |
-| **Lore** | `eridian`, `rocky lore`, `grace`, `hail mary`, `stratt` |
-| **Interaction** | `hello`, `encourage me`, `help` |
-| **Utility** | `time`, `date`, `open youtube`, `focus mode`, `clear`, `exit` |
-
----
-
 ## 🔧 Requirements
 
 - Python 3.10+
