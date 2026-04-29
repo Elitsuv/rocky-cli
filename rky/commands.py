@@ -4,6 +4,7 @@ import time
 import sys
 from rky.personality import format_response, format_question, unknown_command, load_user_profile, save_user_profile, C
 from rky.brain import brain
+from rky.voice import voice_assistant
 
 def cmd_know_me():
     print(format_question("What is your designation, friend? (Enter name):"))
@@ -110,6 +111,18 @@ def cmd_astrophage():
 def cmd_taumoeba(): 
     return format_response("Taumoeba — natural predator of Astrophage.\nStatus: SOLUTION.")
 
+def cmd_voice(args: str):
+    args = args.strip().lower()
+    if args in ["on", "enable"]:
+        voice_assistant.enabled = True
+        return format_response("Voice mode enabled. I will speak to you now.")
+    elif args in ["off", "disable"]:
+        voice_assistant.enabled = False
+        return format_response("Voice mode disabled. Silence is golden.")
+    else:
+        status = "ON" if voice_assistant.enabled else "OFF"
+        return format_response(f"Voice mode is currently {status}. Use 'voice on' or 'voice off'.")
+
 def cmd_help():
     help_text = """
     ── SYSTEM ────────────────────────────────────
@@ -128,6 +141,7 @@ def cmd_help():
     ── INTERACTION ───────────────────────────────
       youtube         Open YouTube
       clear           Clear screen
+      voice [on/off]  Toggle voice output
       exit            Shut down Rocky
     """
     return format_response(help_text, add_flair=False)
@@ -143,6 +157,8 @@ def execute(user_input: str) -> str:
         return cmd_pomodoro(clean.replace("focus", "").replace("pomodoro", ""))
     if clean.startswith("water"):
         return cmd_water(clean[5:])
+    if clean.startswith("voice"):
+        return cmd_voice(clean[5:])
         
     COMMAND_MAP = {
         "status": cmd_status,
