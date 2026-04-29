@@ -8,6 +8,9 @@ setup(
     packages=find_packages(),
     py_modules=["rocky"],          
     python_requires=">=3.10",
+    install_requires=[
+        "pyttsx3",
+    ],
     entry_points={
         "console_scripts": [
             "rocky=rocky:main",

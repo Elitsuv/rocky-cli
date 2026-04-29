@@ -1,6 +1,7 @@
 import random
 import json
-from pathlib import Path
+import os
+from rky.voice import voice_assistant
 
 C = {
     "ROCKY":   "\033[38;5;130m",
@@ -31,9 +32,7 @@ UNKNOWN_RESPONSES = [
     "Question is unclear. Rephrase, friend?",
 ]
 
-# ── Unified State Directory ───────────────────────────────────────────────────
-_STATE_DIR  = Path.home() / ".rocky"
-USER_PROFILE_FILE = _STATE_DIR / "user_profile.json"
+USER_PROFILE_FILE = os.path.join(os.path.expanduser("~"), ".rocky", "user_profile.json")
 
 def load_user_profile():
     if USER_PROFILE_FILE.exists():
@@ -58,6 +57,7 @@ def get_user_name():
 
 def format_response(message: str, add_flair: bool = True) -> str:
     """Wraps a message in Rocky's visual style with user's name."""
+    voice_assistant.speak(message)
     user_name = get_user_name()
     lines = message.strip().splitlines()
     
@@ -80,6 +80,7 @@ def format_response(message: str, add_flair: bool = True) -> str:
 
 def format_question(question: str) -> str:
     """Format a question prompt in orange to show curiosity."""
+    voice_assistant.speak(question)
     return f"{C['QUEST']}❓ {question}{C['RESET']}"
 
 def unknown_command() -> str:
