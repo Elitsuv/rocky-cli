@@ -1,7 +1,7 @@
 # 🪨 Rocky CLI
 
 <div align="center">
-  <p><strong>Your Eridian terminal companion from Project Hail Mary.</strong></p>
+  <p><strong>Your Eridian terminal companion inspired from Project Hail Mary.</strong></p>
   <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python Version" />
   <img src="https://img.shields.io/badge/version-v1.1.0-orange.svg" alt="Version" />
   <img src="https://img.shields.io/badge/license-Apache-green.svg" alt="License" />
