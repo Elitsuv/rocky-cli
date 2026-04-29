@@ -6,7 +6,7 @@ echo.
 echo Installing dependencies and Rocky CLI tool...
 echo.
 
-pip install -e .
+pip install .
 
 echo.
 echo ========================================================
