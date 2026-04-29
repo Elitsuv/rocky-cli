@@ -1,8 +1,5 @@
-import time
 import threading
-import random
-import sys
-import os
+import time
 import json
 from rky.personality import format_response, C
 
@@ -93,6 +90,7 @@ class RockyBrain:
     def start_heartbeat(self):
         t = threading.Thread(target=self._pulse, daemon=True)
         t.start()
+        self._heartbeat_thread = t
 
     def _pulse(self):
         while self.active:
